@@ -10,9 +10,6 @@ participant HBNBFacade as BusinessLogic
 participant Repository
 participant Database
 
-%% =======================
-%% User Registration
-%% =======================
 User->>API: Submit registration form
 API->>BusinessLogic: Validate input & process registration
 BusinessLogic->>Repository: Create new User record
@@ -22,9 +19,13 @@ Repository-->>BusinessLogic: User created
 BusinessLogic-->>API: Return success response
 API-->>User: Registration successful
 
-%% =======================
-%% Place Creation
-%% =======================
+sequenceDiagram
+participant User
+participant API
+participant HBNBFacade as BusinessLogic
+participant Repository
+participant Database
+
 User->>API: Submit new Place details
 API->>BusinessLogic: Validate & process place creation
 BusinessLogic->>Repository: Create Place record linked to User
@@ -34,9 +35,14 @@ Repository-->>BusinessLogic: Place created
 BusinessLogic-->>API: Return success response
 API-->>User: Place creation successful
 
-%% =======================
-%% Review Submission
-%% =======================
+
+sequenceDiagram
+participant User
+participant API
+participant HBNBFacade as BusinessLogic
+participant Repository
+participant Database
+
 User->>API: Submit review for a Place
 API->>BusinessLogic: Validate & process review
 BusinessLogic->>Repository: Create Review linked to User & Place
@@ -46,9 +52,14 @@ Repository-->>BusinessLogic: Review created
 BusinessLogic-->>API: Return success response
 API-->>User: Review submission successful
 
-%% =======================
-%% Fetching a List of Places
-%% =======================
+
+sequenceDiagram
+participant User
+participant API
+participant HBNBFacade as BusinessLogic
+participant Repository
+participant Database
+
 User->>API: Request list of Places
 API->>BusinessLogic: Forward request with criteria
 BusinessLogic->>Repository: Query Places
@@ -57,6 +68,7 @@ Database-->>Repository: Return Place data
 Repository-->>BusinessLogic: Places retrieved
 BusinessLogic-->>API: Return list of Places
 API-->>User: Display list of Places
+
 
 
 ```
