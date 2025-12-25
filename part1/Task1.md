@@ -1,73 +1,120 @@
-# HBnB Evolution - Technical Documentation
+# HBnB Evolution - Business Logic Layer Class Diagram
 
-This document provides a complete overview of the HBnB Evolution application's architecture and business logic.
-
----
-
-## 1. High-Level Package Diagram
-
-This diagram illustrates the three-layer architecture (Presentation, Business Logic, Persistence) and how the layers communicate using the **Facade Pattern**.
+This diagram illustrates the core entities in the Business Logic layer, their attributes, methods, and relationships.
 
 ```mermaid
 classDiagram
-    %% =======================
-    %% Presentation Layer
-    %% =======================
-    class API {
-        <<Presentation>>
-        %% Handles user requests via endpoints
-    }
-    class Services {
-        <<Presentation>>
-        %% Provides service logic for API
-    }
+  %% =======================
+  %% BaseEntity
+  %% =======================
+  class BaseEntity {
+    +UUID id
+    +datetime created_at
+    +datetime updated_at
+  }
 
-    %% =======================
-    %% Business Logic Layer
-    %% =======================
-    class HBNBFacade {
-        <<Facade>>
-        %% Unified interface to interact with models
-    }
+  %% =======================
+  %% User
+  %% =======================
+  class User {
+    +string first_name
+    +string last_name
+    +string email
+    +string password
+    +boolean is_admin
+    +create()
+    +update()
+    +delete()
+  }
 
-    %% =======================
-    %% Persistence Layer
-    %% =======================
-    class Repository {
-        <<Persistence>>
-        %% Manages data operations for models
-    }
-    class Database {
-        <<Persistence>>
-        %% Stores application data
-    }
+  %% =======================
+  %% Place
+  %% =======================
+  class Place {
+    +string title
+    +string description
+    +float price
+    +float latitude
+    +float longitude
+    +create()
+    +update()
+    +delete()
+  }
 
-    %% =======================
-    %% Models
-    %% =======================
-    class User {
-        <<Model>>
-    }
-    class Place {
-        <<Model>>
-    }
-    class Review {
-        <<Model>>
-    }
-    class Amenity {
-        <<Model>>
-    }
+  %% =======================
+  %% Review
+  %% =======================
+  class Review {
+    +int rating
+    +string comment
+    +create()
+    +update()
+    +delete()
+  }
 
-    %% =======================
-    %% Relationships
-    %% =======================
-    API --> HBNBFacade : Uses Facade
-    Services --> HBNBFacade : Uses Facade
-    HBNBFacade --> Repository : Interacts With
-    Repository --> Database : Stores Data
+  %% =======================
+  %% Amenity
+  %% =======================
+  class Amenity {
+    +string name
+    +string description
+    +create()
+    +update()
+    +delete()
+  }
 
-    %% Models connected to Repository
-    Repository --> User : Manages
-    Repository --> Place : Manages
-    Repository --> Review : Manages
-    Repository --> Amenity : Manages
+  %% =======================
+  %% Inheritance
+  %% =======================
+  BaseEntity <|-- User
+  BaseEntity <|-- Place
+  BaseEntity <|-- Review
+  BaseEntity <|-- Amenity
+
+  %% =======================
+  %% Relationships
+  %% =======================
+  User "1" o-- "many" Place : owns
+  User "1" o-- "many" Review : writes
+  Place "1" o-- "many" Review : has
+  Place "1" o-- "many" Amenity : includes
+
+
+```
+##  Business Logic Entity Explanatory Notes
+
+### BaseEntity
+**Role:** Base entity shared by all other entities.  
+**Key Attributes:** `id`, `created_at`, `updated_at`  
+**Methods:** None (inherited)  
+
+### User
+**Role:** Represents system users (regular or admin).  
+**Attributes:** `first_name`, `last_name`, `email`, `password`, `is_admin`  
+**Methods:** `create()`, `update()`, `delete()`  
+**Relationships:** Owns multiple `Place` objects; writes multiple `Review` objects.  
+
+### Place
+**Role:** Represents properties/listings.  
+**Attributes:** `title`, `description`, `price`, `latitude`, `longitude`  
+**Methods:** `create()`, `update()`, `delete()`  
+**Relationships:** Owned by a `User`; has multiple `Review` objects; includes multiple `Amenity` objects.  
+
+### Review
+**Role:** Represents user reviews for places.  
+**Attributes:** `rating`, `comment`  
+**Methods:** `create()`, `update()`, `delete()`  
+**Relationships:** Linked to a `User` and a `Place`.  
+
+### Amenity
+**Role:** Represents facilities or services associated with places.  
+**Attributes:** `name`, `description`  
+**Methods:** `create()`, `update()`, `delete()`  
+**Relationships:** Associated with multiple `Place` objects (many-to-many)
+
+
+
+
+
+
+
