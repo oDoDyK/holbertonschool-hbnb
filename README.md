@@ -115,7 +115,15 @@ Understand layered architectures and design patterns
 Create UML-based technical documentation
 
 ---
+🛠️ From Blueprint to Code
+
+HBnB Evolution begins as a blueprint rather than a finished product.
+Each diagram, model, and design choice acts as a guide for future development phases, ensuring that implementation follows a clear and consistent direction.
+As the project evolves, these foundations allow new functionality to be added confidently without disrupting existing system behavior.
+
+---
 ## Relevance to Software Engineering :
 This project applies industry-standard architectural patterns used in backend and service-oriented systems, 
 emphasizing modularity, maintainability, and iterative software development.
 
+---
