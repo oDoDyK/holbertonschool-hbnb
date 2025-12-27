@@ -1,58 +1,105 @@
-# 🏠 HBnB Evolution – Technical Design Document
+# 🏠 HBnB Evolution – Technical Design Document (Enhanced Version)
+
+## Table of Contents
+1. [Introduction](#1-introduction)  
+2. [High-Level Architecture](#2-high-level-architecture)  
+   - 2.1 Architectural Overview  
+   - 2.2 High-Level Package Diagram  
+3. [Business Logic Layer – Class Diagram](#3-business-logic-layer--class-diagram)  
+   - 3.1 Overview  
+   - 3.2 Class Diagram  
+   - 3.3 Design Rationale and Class Notes  
+4. [API Interaction Flow – Sequence Diagrams](#4-api-interaction-flow--sequence-diagrams)  
+   - 4.1 User Registration  
+   - 4.2 Place Creation  
+   - 4.3 Review Submission  
+   - 4.4 Fetching List of Places  
+5. [Conclusion](#5-conclusion)
+
+---
 
 ## 1. Introduction
 
 ### 1.1 Purpose of This Document 📄
-This technical document provides a comprehensive architectural and design blueprint for the **HBnB Evolution** application, a simplified AirBnB-like platform. It serves as a reference for the implementation phases of the project by clearly describing the system structure, core business entities, and interaction flows.
+This document provides a **comprehensive architectural and design blueprint** for the HBnB Evolution application, a simplified AirBnB-like platform. It serves as a reference for developers, testers, and stakeholders during the implementation phases.
 
 ### 1.2 Scope 🎯
 This document includes:  
-- 🏗️ A high-level architectural overview of the system  
-- 📊 A detailed class diagram for the Business Logic layer  
-- 🔄 Sequence diagrams illustrating API interaction flows  
-- 📝 Explanatory notes explaining design decisions and data flow  
+- 🏗️ High-Level Architecture with **layer explanations and Facade Pattern rationale**  
+- 📊 Detailed Class Diagram for the Business Logic layer with **per-class notes**  
+- 🔄 Sequence Diagrams for key API interactions with **step-by-step explanations**  
 
 ---
 
 ## 2. High-Level Architecture
 
 ### 2.1 Architectural Overview 🏛️
-HBnB Evolution follows a layered architecture composed of three main layers:
+HBnB Evolution is based on a **three-layer architecture**:
 
 **Presentation Layer 🌐**  
 - Exposes RESTful APIs  
-- Handles HTTP requests and responses  
-- Acts as a facade to the Business Logic layer  
+- Handles HTTP requests/responses  
+- Acts as **facade to Business Logic Layer**  
 
 **Business Logic Layer ⚙️**  
-- Contains domain models and core business rules  
-- Validates data and enforces application constraints  
+- Core domain entities and business rules  
+- Validates inputs and enforces constraints  
 
 **Persistence Layer 💾**  
-- Responsible for data storage and retrieval  
-- Abstracts database operations from business logic  
+- Abstracts database operations  
+- Stores and retrieves data efficiently  
 
-This separation ensures maintainability, scalability, and testability.
+**Rationale for Layering:**  
+- Separation of concerns  
+- Easier testing and maintenance  
+- Flexibility for future extensions  
+
+**Facade Pattern:**  
+- `HBNBFacade` acts as a single interface to the Business Logic  
+- Reduces complexity for the Presentation Layer  
+- Encapsulates multiple operations (CRUD, validation) in one point of access  
+
+---
 
 ### 2.2 High-Level Package Diagram 🗂️
 
-``` mermaid
+```mermaid
 classDiagram
+    %% =======================
+    %% Presentation Layer
+    %% =======================
     class API {
         <<Presentation>>
+        %% Handles user requests via endpoints
     }
     class Services {
         <<Presentation>>
+        %% Provides service logic for API
     }
+
+    %% =======================
+    %% Business Logic Layer
+    %% =======================
     class HBNBFacade {
         <<Facade>>
+        %% Unified interface to interact with models
     }
+
+    %% =======================
+    %% Persistence Layer
+    %% =======================
     class Repository {
         <<Persistence>>
+        %% Manages data operations for models
     }
     class Database {
         <<Persistence>>
+        %% Stores application data
     }
+
+    %% =======================
+    %% Models
+    %% =======================
     class User {
         <<Model>>
     }
@@ -66,39 +113,105 @@ classDiagram
         <<Model>>
     }
 
-    API --> HBNBFacade : Facade Pattern
-    Services --> HBNBFacade : Facade Pattern
-    HBNBFacade --> Repository : CRUD Operations
-    Repository --> Database : stores data
+    %% =======================
+    %% Relationships
+    %% =======================
+    API --> HBNBFacade : Uses Facade
+    Services --> HBNBFacade : Uses Facade
+    HBNBFacade --> Repository : Interacts With
+    Repository --> Database : Stores Data
 
-    %% Standalone model classes
-    %% (No direct relationships but included for completeness)
+    %% Models connected to Repository
+    Repository --> User : Manages
+    Repository --> Place : Manages
+    Repository --> Review : Manages
+    Repository --> Amenity : Manages
+
+```mermaid
+classDiagram
+    %% =======================
+    %% Presentation Layer
+    %% =======================
+    class API {
+        <<Presentation>>
+        %% Handles user requests via endpoints
+    }
+    class Services {
+        <<Presentation>>
+        %% Provides service logic for API
+    }
+
+    %% =======================
+    %% Business Logic Layer
+    %% =======================
+    class HBNBFacade {
+        <<Facade>>
+        %% Unified interface to interact with models
+    }
+
+    %% =======================
+    %% Persistence Layer
+    %% =======================
+    class Repository {
+        <<Persistence>>
+        %% Manages data operations
+    }
+    class Database {
+        <<Persistence>>
+        %% Stores application data
+    }
+
+    %% =======================
+    %% Models
+    %% =======================
+    class User {
+        <<Model>>
+    }
+    class Place {
+        <<Model>>
+    }
+    class Review {
+        <<Model>>
+    }
+    class Amenity {
+        <<Model>>
+    }
+
+    %% =======================
+    %% Relationships
+    %% =======================
+    API --> HBNBFacade : Uses Facade
+    Services --> HBNBFacade : Uses Facade
+    HBNBFacade --> Repository : Interacts With
+    Repository --> Database : Stores Data
+
 ```
 
-**Explanation 💡**  
-- The Presentation Layer communicates only with the Business Logic layer.  
-- The Business Logic layer coordinates all operations and delegates data storage to the Persistence layer.  
-- The Persistence layer does not communicate directly with the Presentation layer.  
+**Notes 💡**  
+- The **Presentation Layer** communicates only through the Facade.  
+- The **Business Logic Layer** coordinates operations and delegates persistence tasks.  
+- The **Persistence Layer** is independent of the Presentation Layer.  
 
 ---
 
-## 3. Business Logic Layer – Class Diagram 🏗️
+## 3. Business Logic Layer – Class Diagram
 
 ### 3.1 Overview 🔹
-The Business Logic layer contains the core entities:  
-- 👤 **User**  
-- 🏡 **Place**  
-- ✍️ **Review**  
-- 🛏️ **Amenity**  
+Core entities:  
+- 👤 **User** – represents platform users  
+- 🏡 **Place** – represents property listings  
+- ✍️ **Review** – user feedback  
+- 🛏️ **Amenity** – features associated with a place  
 
-Each entity:  
-- Has a unique identifier  
-- Tracks creation and update timestamps  
-- Encapsulates business rules relevant to its domain  
+**Key Features:**  
+- UUID identifiers, timestamps  
+- CRUD methods for API support  
+- Relationships define ownership and aggregation  
+
+---
 
 ### 3.2 Class Diagram 📊
-
-``` mermaid
+```mermaid
 classDiagram
   class BaseEntity {
     +UUID id
@@ -153,24 +266,33 @@ classDiagram
   User "1" o-- "many" Review : writes
   Place "1" o-- "many" Review : has
   Place "1" o-- "many" Amenity : includes
-```
 
-### 3.3 Design Rationale 💡
-- **User–Place relationship** ensures ownership of listings.  
-- **Place–Review relationship** allows feedback from multiple users.  
-- Many-to-many **Place–Amenity relationship** provides flexibility in property features.  
-- CRUD methods are included to support API operations.  
-- Timestamps support audit and traceability requirements.  
+```
 
 ---
 
-## 4. API Interaction Flow – Sequence Diagrams 🔄
+### 3.3 Design Rationale and Class Notes 💡
+
+| Class  | Purpose | Notes |
+|--------|---------|-------|
+| BaseEntity | Base for all entities | Provides `id`, `created_at`, `updated_at` |
+| User | Platform user | Supports authentication; owns listings & reviews |
+| Place | Property listing | Linked to User and Amenities; contains CRUD methods |
+| Review | Feedback on Place | Connected to User and Place; rating & comment fields |
+| Amenity | Features of Place | Many-to-many relationship with Place; flexible for future features |
+
+**Relationships:**  
+- **User → Place:** ownership of listings  
+- **User → Review:** submission of reviews  
+- **Place → Review:** multiple reviews per listing  
+- **Place → Amenity:** allows multiple amenities per property  
+
+---
+
+## 4. API Interaction Flow – Sequence Diagrams
 
 ### 4.1 User Registration 📝
-**Description**  
-Handles new user creation with validation and persistence.  
-
-``` mermaid
+```mermaid
 sequenceDiagram
     actor User
     participant API as API Service
@@ -190,13 +312,18 @@ sequenceDiagram
         BL-->>API: Invalid user data request
         API-->>User: HTTP 400 Bad Request
     end
+
 ```
 
-### 4.2 Place Creation 🏡
-**Description**  
-Allows a user to create a new place listing.  
+**Notes:**  
+- Validation ensures email format, password strength  
+- Database only receives validated data  
 
-``` mermaid
+---
+
+### 4.2 Place Creation 🏡
+```mermaid
+
 sequenceDiagram
     actor User
     participant API as API Service
@@ -216,13 +343,18 @@ sequenceDiagram
         BL-->>API: Invalid data error
         API-->>User: HTTP 400 Bad Request
     end
+
+
 ```
 
-### 4.3 Review Submission ✍️
-**Description**  
-Allows users to submit reviews for places.  
+**Notes:**  
+- Validates listing data before saving  
+- Ensures correct ownership by User  
 
-``` mermaid
+---
+
+### 4.3 Review Submission ✍️
+```mermaid
 sequenceDiagram
     actor User
     participant API as API Service
@@ -242,13 +374,18 @@ sequenceDiagram
         BL-->>API: Review not valid
         API-->>User: HTTP 400 Bad Request
     end
+
+
 ```
 
-### 4.4 Fetching a List of Places 📋
-**Description**  
-Retrieves available places based on optional filters.  
+**Notes:**  
+- Allows users to submit feedback only for valid places  
+- Validation of rating and comment required  
 
-``` mermaid
+---
+
+### 4.4 Fetching a List of Places 📋
+```mermaid
 sequenceDiagram
     actor User
     participant API as API Service
@@ -261,14 +398,20 @@ sequenceDiagram
     DB-->>BL: Return list of listings
     BL-->>API: Return place list
     API-->>User: HTTP 200 OK
+
+
 ```
+
+**Notes:**  
+- Supports optional filters for price, location, amenities  
+- Returns structured JSON to the client  
 
 ---
 
 ## 5. Conclusion ✅
-This technical document defines the architecture, business entities, and interaction flows of the HBnB Evolution application. By combining UML diagrams with explanatory notes, it provides a clear and reliable reference for the implementation phases.
+This document provides a **complete technical blueprint** for HBnB Evolution:  
 
-The layered design ensures:  
-- 🧹 Clean separation of concerns  
-- 🛠️ Maintainable and extensible codebase  
-- 🌟 Alignment with industry best practices
+- 🧹 Separation of concerns with layered architecture  
+- 🛠️ Maintainable, extensible codebase  
+- 🌟 Clear understanding of core entities, relationships, and API flows  
+- ✅ Ready reference for developers and testers  
