@@ -103,4 +103,15 @@ This repository is intended to:
 - The design is intentionally modular to support future extensions.
 - Detailed implementation will be introduced progressively in later phases.
 
+
+---
+## 🎓 Learning Outcomes
+Practice system analysis and architectural design
+
+Apply OOP concepts in domain modeling
+
+Understand layered architectures and design patterns
+
+Create UML-based technical documentation
+
 ---
