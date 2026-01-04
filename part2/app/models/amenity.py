@@ -2,7 +2,7 @@ from app.models.BaseEntity import BaseModel
 
 
 class User(BaseModel):
-    def __init__(self, name):
+    def __init__(self, name, places):
         super().__init__()
 
         if not name or len(name) > 50:
