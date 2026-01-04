@@ -260,10 +260,10 @@ classDiagram
     +delete()
   }
 
-  BaseEntity <|-- User
-  BaseEntity <|-- Place
-  BaseEntity <|-- Review
-  BaseEntity <|-- Amenity
+  BaseModel <|-- User
+  BaseModel <|-- Place
+  BaseModel <|-- Review
+  BaseModel <|-- Amenity
 
   User "1" o-- "many" Place : owns
   User "1" o-- "many" Review : writes
