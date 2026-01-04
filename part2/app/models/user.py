@@ -1,4 +1,5 @@
 from app.models.BaseEntity import BaseModel
+from email_validator import validate_email, EmailNotValidError
 
 
 class User(BaseModel):
@@ -9,9 +10,9 @@ class User(BaseModel):
             raise ValueError("Invalid first_name")
         if not last_name or len(last_name) > 50:
             raise ValueError("Invalid last_name")
-        if not email:
-            raise ValueError("Email required")
-
+        if not email or "@" not in email or "." not in email:
+            raise ValueError("Invalid Email")
+            
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
