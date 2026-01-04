@@ -254,7 +254,6 @@ classDiagram
 
   class Amenity {
     +string name
-    +string description
     +create()
     +update()
     +delete()
