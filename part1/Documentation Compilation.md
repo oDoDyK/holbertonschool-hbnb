@@ -236,6 +236,7 @@ classDiagram
     +float price
     +float latitude
     +float longitude
+    +User owner
     +create()
     +update()
     +delete()
@@ -243,7 +244,9 @@ classDiagram
 
   class Review {
     +int rating
-    +string comment
+    +string text
+    +Place place
+    +User user
     +create()
     +update()
     +delete()
