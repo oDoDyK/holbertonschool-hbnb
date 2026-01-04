@@ -1,1 +1,16 @@
+from app.models.BaseEntity import BaseModel
 
+
+class User(BaseModel):
+    def __init__(self, name):
+        super().__init__()
+
+        if not name or len(name) > 50:
+            raise ValueError("Invalid name")
+
+        self.name = name
+        self.places = []  # List to store related places
+
+    def add_place(self, place):
+        """Add a place to the user."""
+        self.places.append(place)
