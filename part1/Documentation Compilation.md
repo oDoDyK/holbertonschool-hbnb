@@ -68,71 +68,6 @@ classDiagram
     %% Presentation Layer
     %% =======================
     class API {
-        <<Layer>>
-        %% Handles user requests via endpoints
-    }
-    class Services {
-        <<Layer>>
-        %% Provides service logic for API
-    }
-
-    %% =======================
-    %% Business Logic Layer
-    %% =======================
-    class BusinessLogicLayer {
-        <<Layer>>
-    +Domain Models
-    +Business Rules
-    }
-
-    %% =======================
-    %% Persistence Layer
-    %% =======================
-    class Repository {
-        <<Layer>>
-        %% Manages data operations for models
-    }
-    class Database {
-        <<Layer>>
-        %% Stores application data
-    }
-
-    %% =======================
-    %% Models
-    %% =======================
-    class User {
-        <<Model>>
-    }
-    class Place {
-        <<Model>>
-    }
-    class Review {
-        <<Model>>
-    }
-    class Amenity {
-        <<Model>>
-    }
-
-    %% =======================
-    %% Relationships
-    %% =======================
-    API --> Models : Uses Facade
-    Services --> Models : Uses Facade
-    HBNBFacade --> Repository : Interacts With
-    Repository --> Database : Stores Data
-
-    %% Models connected to Repository
-    Repository --> User : Manages
-    Repository --> Place : Manages
-    Repository --> Review : Manages
-    Repository --> Amenity : Manages
-
-```mermaid
-classDiagram
-    %% =======================
-    %% Presentation Layer
-    %% =======================
-    class API {
         <<Presentation>>
         %% Handles user requests via endpoints
     }
@@ -154,7 +89,7 @@ classDiagram
     %% =======================
     class Repository {
         <<Persistence>>
-        %% Manages data operations
+        %% Manages data operations for models
     }
     class Database {
         <<Persistence>>
@@ -180,10 +115,17 @@ classDiagram
     %% =======================
     %% Relationships
     %% =======================
-    API --> BusinessLogicLayer : Uses Facade
-    Services --> BusinessLogicLayer : Uses Facade
+    API --> HBNBFacade : Uses Facade
+    Services --> HBNBFacade : Uses Facade
     HBNBFacade --> Repository : Interacts With
     Repository --> Database : Stores Data
+
+    %% Models connected to Repository
+    Repository --> User : Manages
+    Repository --> Place : Manages
+    Repository --> Review : Manages
+    Repository --> Amenity : Manages
+
 
 ```
 
