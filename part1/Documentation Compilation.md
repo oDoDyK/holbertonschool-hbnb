@@ -80,7 +80,7 @@ classDiagram
     %% =======================
     %% Business Logic Layer
     %% =======================
-    class HBNBFacade {
+    class BusinessLogicLayer {
         <<Facade>>
         %% Unified interface to interact with models
     }
