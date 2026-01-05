@@ -65,6 +65,21 @@ HBnB Evolution is based on a **three-layer architecture**:
 ```mermaid
 classDiagram
     %% =======================
+    %% Layers
+    %% =======================
+    class PresentationLayer {
+        <<Layer>>
+    }
+
+    class BusinessLogicLayer {
+        <<Layer>>
+    }
+
+    class PersistenceLayer {
+        <<Layer>>
+    }
+
+    %% =======================
     %% Presentation Layer
     %% =======================
     class API {
@@ -74,27 +89,34 @@ classDiagram
         <<Presentation>>
     }
 
+    PresentationLayer *-- API
+    PresentationLayer *-- Services
+
     %% =======================
     %% Business Logic Layer
     %% =======================
-    namespace BusinessLogicLayer {
-        class HBNBFacade {
-            <<Facade>>
-        }
-
-        class User {
-            <<Model>>
-        }
-        class Place {
-            <<Model>>
-        }
-        class Review {
-            <<Model>>
-        }
-        class Amenity {
-            <<Model>>
-        }
+    class HBNBFacade {
+        <<Facade>>
     }
+
+    class User {
+        <<Model>>
+    }
+    class Place {
+        <<Model>>
+    }
+    class Review {
+        <<Model>>
+    }
+    class Amenity {
+        <<Model>>
+    }
+
+    BusinessLogicLayer *-- HBNBFacade
+    BusinessLogicLayer *-- User
+    BusinessLogicLayer *-- Place
+    BusinessLogicLayer *-- Review
+    BusinessLogicLayer *-- Amenity
 
     %% =======================
     %% Persistence Layer
@@ -106,19 +128,17 @@ classDiagram
         <<Persistence>>
     }
 
-    %% =======================
-    %% Relationships
-    %% =======================
-    API --> HBNBFacade : Uses Facade
-    Services --> HBNBFacade : Uses Facade
+    PersistenceLayer *-- Repository
+    PersistenceLayer *-- Database
 
-    HBNBFacade --> Repository : Interacts With
-    Repository --> Database : Stores Data
+    %% =======================
+    %% Cross-Layer Relations
+    %% =======================
+    API --> HBNBFacade : Uses
+    Services --> HBNBFacade : Uses
 
-    Repository --> User : Manages
-    Repository --> Place : Manages
-    Repository --> Review : Manages
-    Repository --> Amenity : Manages
+    HBNBFacade --> Repository : Persists via
+    Repository --> Database : Stores
 
 ```
 
