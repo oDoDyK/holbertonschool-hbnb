@@ -7,5 +7,3 @@ def test_user_creation():
     assert user.email == "john.doe@example.com"
     assert user.is_admin is False  # Default value
     print("User creation test passed!")
-
-test_user_creation()
