@@ -15,5 +15,3 @@ def test_place_creation():
     assert len(place.reviews) == 1
     assert place.reviews[0].text == "Great stay!"
     print("Place creation and relationship test passed!")
-
-test_place_creation()
