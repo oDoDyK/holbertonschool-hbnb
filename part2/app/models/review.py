@@ -1,4 +1,5 @@
 from app.models.BaseEntity import BaseModel
+from app.models.place import Place
 
 
 class Review(BaseModel):
