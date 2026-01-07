@@ -1,6 +1,7 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.models.place import Place
 
 
 class HBnBFacade:
@@ -53,4 +54,105 @@ class HBnBFacade:
 
     self.amenity_repo.update(amenity)
     return amenity
+
+
+    # ----------- PLACE METHODS (Task 4) -----------
+
+    def create_place(self, place_data):
+    # Validate owner exists
+    owner_id = place_data.get("owner_id")
+    owner = self.user_repo.get(owner_id) if owner_id else None
+    if owner is None:
+        raise ValueError("Invalid owner_id")
+
+    # Validate amenities exist (optional field but if given must be valid)
+    amenities_ids = place_data.get("amenities", []) or []
+    amenities_objs = []
+    for amenity_id in amenities_ids:
+        amenity = self.amenity_repo.get(amenity_id)
+        if amenity is None:
+            raise ValueError("Invalid amenity_id")
+        amenities_objs.append(amenity)
+
+    # Validate numeric fields
+    price = place_data.get("price")
+    latitude = place_data.get("latitude")
+    longitude = place_data.get("longitude")
+
+    if price is None or price < 0:
+        raise ValueError("Invalid price")
+    if latitude is None or latitude < -90 or latitude > 90:
+        raise ValueError("Invalid latitude")
+    if longitude is None or longitude < -180 or longitude > 180:
+        raise ValueError("Invalid longitude")
+
+    # Create place
+    place = Place(
+        title=place_data.get("title"),
+        description=place_data.get("description"),
+        price=price,
+        latitude=latitude,
+        longitude=longitude,
+        owner=owner
+    )
+
+    # Attach amenities
+    for a in amenities_objs:
+        place.add_amenity(a)
+
+    self.place_repo.add(place)
+    return place
+
+
+    def get_place(self, place_id):
+    return self.place_repo.get(place_id)
+
+
+    def get_all_places(self):
+    return self.place_repo.get_all()
+
+
+    def update_place(self, place_id, place_data):
+    place = self.place_repo.get(place_id)
+    if place is None:
+        return None
+
+    # Only update allowed fields
+    if "title" in place_data:
+        place.title = place_data["title"]
+    if "description" in place_data:
+        place.description = place_data["description"]
+
+    if "price" in place_data:
+        if place_data["price"] is None or place_data["price"] < 0:
+            raise ValueError("Invalid price")
+        place.price = place_data["price"]
+
+    if "latitude" in place_data:
+        lat = place_data["latitude"]
+        if lat is None or lat < -90 or lat > 90:
+            raise ValueError("Invalid latitude")
+        place.latitude = lat
+
+    if "longitude" in place_data:
+        lon = place_data["longitude"]
+        if lon is None or lon < -180 or lon > 180:
+            raise ValueError("Invalid longitude")
+        place.longitude = lon
+
+    # Update amenities if provided
+    if "amenities" in place_data:
+        amenities_ids = place_data.get("amenities") or []
+        new_amenities = []
+        for amenity_id in amenities_ids:
+            amenity = self.amenity_repo.get(amenity_id)
+            if amenity is None:
+                raise ValueError("Invalid amenity_id")
+            new_amenities.append(amenity)
+        place.amenities = []
+        for a in new_amenities:
+            place.add_amenity(a)
+
+    self.place_repo.update(place)
+    return place
 
