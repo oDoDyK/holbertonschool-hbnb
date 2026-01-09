@@ -27,9 +27,17 @@ class HBnBFacade:
     def get_all_users(self):
         return self.user_repo.get_all()
 
-    def update_user(self, user):
-        self.user_repo.update(user)
+    def update_user(self, user_id, user_data):
+        user = self.user_repo.get(user_id)
+        if user is None:
+            return None
+
+        for key, value in user_data.items():
+            setattr(user, key, value)
+
+        self.user_repo.update(user_id, user_data)
         return user
+
 
     # -------- AMENITY METHODS (Task 3) --------
 
