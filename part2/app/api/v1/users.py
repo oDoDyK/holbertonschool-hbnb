@@ -52,34 +52,34 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
         return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
 
-def get(self):
-    """Retrieve all users"""
-    users = facade.get_all_users()
-    users_list = [
-        {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email
-        } for user in users
-    ]
-    return users_list, 200
+    def get(self):
+        """Retrieve all users"""
+        users = facade.get_all_users()
+        users_list = [
+            {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email
+            } for user in users
+        ]
+        return users_list, 200
 
 @api.route('/<user_id>')
 class UserResource(Resource):
     def put(self, user_id):
-    """Update an existing user"""
-    data = api.payload
+        """Update an existing user"""
+        data = api.payload
 
-    user = facade.update_user(user_id, data)
-    if not user:
-        return {'error': 'User not found'}, 404
+        user = facade.update_user(user_id, data)
+        if not user:
+            return {'error': 'User not found'}, 404
 
-    return {
-        'id': user.id,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'email': user.email
-    }, 200
+        return {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email
+        }, 200
 
 
