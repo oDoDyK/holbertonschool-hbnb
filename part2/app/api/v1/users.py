@@ -68,22 +68,18 @@ def get(self):
 @api.route('/<user_id>')
 class UserResource(Resource):
     def put(self, user_id):
-        """Update an existing user"""
-        user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
-        
-        data = api.payload
-        
-        user.first_name = data.get('first_name', user.first_name)
-        user.last_name = data.get('last_name', user.last_name)
-        user.email = data.get('email', user.email)
-        
-        facade.update_user(user) 
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email
-        }, 200
+    """Update an existing user"""
+    data = api.payload
+
+    user = facade.update_user(user_id, data)
+    if not user:
+        return {'error': 'User not found'}, 404
+
+    return {
+        'id': user.id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email
+    }, 200
+
 
