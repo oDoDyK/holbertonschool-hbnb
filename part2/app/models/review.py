@@ -1,21 +1,51 @@
-from app.models.BaseEntity import BaseModel
-from app.models.place import Place
-from app.models.user import User
+from __future__ import annotations
+
+from typing import Any
+
+from hbnb.app.models.base_model import BaseModel
+from hbnb.app.models.user import User
+from hbnb.app.models.place import Place
+
 
 class Review(BaseModel):
-    def __init__(self, text, rating, place, user):
-        super().__init__()
+    """
+    Review entity:
+    - text   (required)
+    - rating (int 1..5)
+    - user   (User instance)
+    - place  (Place instance)
+    """
 
-        if not text:
-            raise ValueError("Text required")
-        if rating < 1 or rating > 5:
-            raise ValueError("Rating must be between 1 and 5")
-        if not isinstance(place, Place):
-            raise TypeError("place must be a valid Place instance")
-        if not isinstance(user, User):
-            raise TypeError("user must be a valid User instance")
-            
+    def __init__(
+        self,
+        text: str,
+        rating: int,
+        user: User,
+        place: Place,
+        **kwargs: Any,
+    ):
+        super().__init__(**kwargs)
         self.text = text
         self.rating = rating
-        self.place = place
         self.user = user
+        self.place = place
+
+        self.validate()
+
+        # optional but helpful: auto-link to place
+        self.place.add_review(self)
+
+    def validate(self) -> None:
+        if not isinstance(self.text, str) or not self.text.strip():
+            raise ValueError("text is required")
+
+        if not isinstance(self.rating, int):
+            raise ValueError("rating must be an integer")
+        if not (1 <= self.rating <= 5):
+            raise ValueError("rating must be between 1 and 5")
+
+        if not isinstance(self.user, User):
+            raise ValueError("user must be a User instance")
+
+        if not isinstance(self.place, Place):
+            raise ValueError("place must be a Place instance")
