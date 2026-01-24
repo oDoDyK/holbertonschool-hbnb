@@ -1,5 +1,6 @@
 """Review API endpoints for HBnB application"""
 from flask_restx import Namespace, Resource, fields
+from flask import request
 from hbnb.app.services.facade import HBnBFacade
 
 api = Namespace('reviews', description='Review operations')
@@ -45,15 +46,10 @@ class ReviewList(Resource):
                 'id': review.id,
                 'text': review.text,
                 'rating': review.rating,
-                'user_id': review.user.id,
-                'place_id': review.place.id,
-                'user': {
-                    'id': review.user.id,
-                    'first_name': review.user.first_name,
-                    'last_name': review.user.last_name
-                },
-                'created_at': review.created_at.isoformat(),
-                'updated_at': review.updated_at.isoformat()
+                'user_id': review.user_id,
+                'place_id': review.place_id,
+                'created_at': review.created_at.isoformat() if hasattr(review.created_at, 'isoformat') else review.created_at,
+                'updated_at': review.updated_at.isoformat() if hasattr(review.updated_at, 'isoformat') else review.updated_at
             }
             for review in reviews
         ], 200
@@ -65,33 +61,57 @@ class ReviewList(Resource):
     @api.response(404, 'User or Place not found')
     def post(self):
         """Create a new review"""
-        review_data = api.payload
+        data = request.get_json()
+
+        # Validate required fields
+        if not data:
+            api.abort(400, 'Request body is required')
+
+        if 'text' not in data or not data.get('text'):
+            api.abort(400, 'text is required and must be non-empty')
+
+        if 'rating' not in data:
+            api.abort(400, 'rating is required')
+
+        try:
+            rating = int(data['rating'])
+            if rating < 1 or rating > 5:
+                api.abort(400, 'rating must be between 1 and 5')
+        except (ValueError, TypeError):
+            api.abort(400, 'rating must be an integer between 1 and 5')
+
+        if 'user_id' not in data or not data.get('user_id'):
+            api.abort(400, 'user_id is required')
+
+        if 'place_id' not in data or not data.get('place_id'):
+            api.abort(400, 'place_id is required')
 
         # Validate user exists
-        user = facade.get_user(review_data['user_id'])
-        if not user:
+        try:
+            user = facade.get_user(data['user_id'])
+            if not user:
+                api.abort(404, 'User not found')
+        except ValueError:
             api.abort(404, 'User not found')
 
         # Validate place exists
-        place = facade.get_place(review_data['place_id'])
-        if not place:
+        try:
+            place = facade.get_place(data['place_id'])
+            if not place:
+                api.abort(404, 'Place not found')
+        except ValueError:
             api.abort(404, 'Place not found')
 
         try:
-            new_review = facade.create_review(review_data)
+            new_review = facade.create_review(data)
             return {
                 'id': new_review.id,
                 'text': new_review.text,
                 'rating': new_review.rating,
-                'user_id': new_review.user.id,
-                'place_id': new_review.place.id,
-                'user': {
-                    'id': new_review.user.id,
-                    'first_name': new_review.user.first_name,
-                    'last_name': new_review.user.last_name
-                },
-                'created_at': new_review.created_at.isoformat(),
-                'updated_at': new_review.updated_at.isoformat()
+                'user_id': new_review.user_id,
+                'place_id': new_review.place_id,
+                'created_at': new_review.created_at.isoformat() if hasattr(new_review.created_at, 'isoformat') else new_review.created_at,
+                'updated_at': new_review.updated_at.isoformat() if hasattr(new_review.updated_at, 'isoformat') else new_review.updated_at
             }, 201
         except ValueError as e:
             api.abort(400, str(e))
@@ -107,24 +127,22 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        review = facade.get_review(review_id)
-        if not review:
-            api.abort(404, 'Review not found')
+        try:
+            review = facade.get_review(review_id)
+            if not review:
+                api.abort(404, 'Review not found')
 
-        return {
-            'id': review.id,
-            'text': review.text,
-            'rating': review.rating,
-            'user_id': review.user.id,
-            'place_id': review.place.id,
-            'user': {
-                'id': review.user.id,
-                'first_name': review.user.first_name,
-                'last_name': review.user.last_name
-            },
-            'created_at': review.created_at.isoformat(),
-            'updated_at': review.updated_at.isoformat()
-        }, 200
+            return {
+                'id': review.id,
+                'text': review.text,
+                'rating': review.rating,
+                'user_id': review.user_id,
+                'place_id': review.place_id,
+                'created_at': review.created_at.isoformat() if hasattr(review.created_at, 'isoformat') else review.created_at,
+                'updated_at': review.updated_at.isoformat() if hasattr(review.updated_at, 'isoformat') else review.updated_at
+            }, 200
+        except ValueError:
+            api.abort(404, 'Review not found')
 
     @api.doc('update_review')
     @api.expect(review_model, validate=True)
@@ -133,40 +151,60 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update review information"""
-        review_data = api.payload
+        data = request.get_json()
+
+        if not data:
+            api.abort(400, 'Request body is required')
 
         # Check if review exists
-        existing_review = facade.get_review(review_id)
-        if not existing_review:
+        try:
+            existing_review = facade.get_review(review_id)
+            if not existing_review:
+                api.abort(404, 'Review not found')
+        except ValueError:
             api.abort(404, 'Review not found')
 
+        # Validate text if provided
+        if 'text' in data and not data.get('text'):
+            api.abort(400, 'text must be non-empty')
+
+        # Validate rating if provided
+        if 'rating' in data:
+            try:
+                rating = int(data['rating'])
+                if rating < 1 or rating > 5:
+                    api.abort(400, 'rating must be between 1 and 5')
+            except (ValueError, TypeError):
+                api.abort(400, 'rating must be an integer between 1 and 5')
+
         # Validate user if being updated
-        if 'user_id' in review_data:
-            user = facade.get_user(review_data['user_id'])
-            if not user:
+        if 'user_id' in data:
+            try:
+                user = facade.get_user(data['user_id'])
+                if not user:
+                    api.abort(404, 'User not found')
+            except ValueError:
                 api.abort(404, 'User not found')
 
         # Validate place if being updated
-        if 'place_id' in review_data:
-            place = facade.get_place(review_data['place_id'])
-            if not place:
+        if 'place_id' in data:
+            try:
+                place = facade.get_place(data['place_id'])
+                if not place:
+                    api.abort(404, 'Place not found')
+            except ValueError:
                 api.abort(404, 'Place not found')
 
         try:
-            updated_review = facade.update_review(review_id, review_data)
+            updated_review = facade.update_review(review_id, data)
             return {
                 'id': updated_review.id,
                 'text': updated_review.text,
                 'rating': updated_review.rating,
-                'user_id': updated_review.user.id,
-                'place_id': updated_review.place.id,
-                'user': {
-                    'id': updated_review.user.id,
-                    'first_name': updated_review.user.first_name,
-                    'last_name': updated_review.user.last_name
-                },
-                'created_at': updated_review.created_at.isoformat(),
-                'updated_at': updated_review.updated_at.isoformat()
+                'user_id': updated_review.user_id,
+                'place_id': updated_review.place_id,
+                'created_at': updated_review.created_at.isoformat() if hasattr(updated_review.created_at, 'isoformat') else updated_review.created_at,
+                'updated_at': updated_review.updated_at.isoformat() if hasattr(updated_review.updated_at, 'isoformat') else updated_review.updated_at
             }, 200
         except ValueError as e:
             api.abort(400, str(e))
@@ -176,15 +214,18 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        review = facade.get_review(review_id)
-        if not review:
+        try:
+            review = facade.get_review(review_id)
+            if not review:
+                api.abort(404, 'Review not found')
+
+            facade.delete_review(review_id)
+            return {}, 200
+        except ValueError:
             api.abort(404, 'Review not found')
 
-        facade.delete_review(review_id)
-        return {'message': 'Review deleted successfully'}, 200
 
-
-@api.route('/places/<place_id>/reviews')
+@api.route('/place/<place_id>/reviews')
 @api.param('place_id', 'The place identifier')
 class PlaceReviewList(Resource):
     """Handles operations for reviews of a specific place"""
@@ -194,8 +235,11 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        place = facade.get_place(place_id)
-        if not place:
+        try:
+            place = facade.get_place(place_id)
+            if not place:
+                api.abort(404, 'Place not found')
+        except ValueError:
             api.abort(404, 'Place not found')
 
         reviews = facade.get_reviews_by_place(place_id)
@@ -204,14 +248,10 @@ class PlaceReviewList(Resource):
                 'id': review.id,
                 'text': review.text,
                 'rating': review.rating,
-                'user_id': review.user.id,
-                'user': {
-                    'id': review.user.id,
-                    'first_name': review.user.first_name,
-                    'last_name': review.user.last_name
-                },
-                'created_at': review.created_at.isoformat(),
-                'updated_at': review.updated_at.isoformat()
+                'user_id': review.user_id,
+                'place_id': review.place_id,
+                'created_at': review.created_at.isoformat() if hasattr(review.created_at, 'isoformat') else review.created_at,
+                'updated_at': review.updated_at.isoformat() if hasattr(review.updated_at, 'isoformat') else review.updated_at
             }
             for review in reviews
         ], 200
