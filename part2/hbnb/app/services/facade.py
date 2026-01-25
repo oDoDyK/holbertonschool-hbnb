@@ -1,4 +1,4 @@
-from hbnb.app.persistence.repository import InMemoryRepository
+from hbnb.app.persistence.SQLAlchemy import SQLAlchemyRepository #Switched to SQLAlchemyRepository
 from hbnb.app.models.user import User
 from hbnb.app.models.amenity import Amenity
 from hbnb.app.models.place import Place
