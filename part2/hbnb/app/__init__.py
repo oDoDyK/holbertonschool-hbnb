@@ -2,8 +2,9 @@ from flask import Flask
 from flask_restx import Api
 
 
-def create_app():
+def create_app(config.DevelopmentConfig):   #Update the create_app() method to receive a configuration
     app = Flask(__name__)
+    app.config.from_object(config_class)
     api = Api(
         app,
         version="1.0",
