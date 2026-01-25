@@ -15,7 +15,8 @@ class HBnBFacade:
     # ===== User Management Methods =====
 
     def create_user(self, user_data):
-        user = User(**user_data)
+        user = User(**user_data)    #including password, not hashed !
+        user.hash_password(password)  #here add this before adding user
         self.user_repo.add(user)
         return user
     
@@ -28,22 +29,15 @@ class HBnBFacade:
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
 
-    def update_user(self, user_id, user_data):
+   def update_user(self, user_id, user_data):    
         user = self.user_repo.get(user_id)
-        if not user:
+        if user is None:
             return None
 
-        if 'first_name' in user_data:
-            user.first_name = user_data['first_name']
-        if 'last_name' in user_data:
-            user.last_name = user_data['last_name']
-        if 'email' in user_data:
-            user.email = user_data['email']
-        if 'is_admin' in user_data:
-            user.is_admin = user_data['is_admin']
+        for key, value in user_data.items():
+            setattr(user, key, value)
 
-        user.validate()
-        user.save()
+        self.user_repo.update(user)
         return user
 
     # ===== Place Management Methods =====
