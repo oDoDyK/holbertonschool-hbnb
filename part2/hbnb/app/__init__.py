@@ -6,8 +6,9 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
 from hbnb.app.api.v1.reviews import api as reviews_ns
+from flask_jwt_extended import JWTManager   #Configure JWT in the Flask Application
 bcrypt = Bcrypt() #Register the plugin within the Application
-
+jwt = JWTManager()  #Configure JWT in the Flask Application
 
 def create_app(config_class="config.DevelopmentConfig"):   #Update the create_app() method to receive a configuration
     app = Flask(__name__)
@@ -26,5 +27,6 @@ def create_app(config_class="config.DevelopmentConfig"):   #Update the create_ap
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
 
     bcrypt.init_app(app)   #Initialize the instance
+    jwt.init_app(app)  #register the middleware with the application instance
     
     return app
