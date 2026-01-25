@@ -1,7 +1,11 @@
 from flask import Flask
 from flask_restx import Api
 from flask_bcrypt import Bcrypt  #Register the plugin within the Application
-
+    # Import and register namespaces
+from app.api.v1.places import api as places_ns
+from app.api.v1.users import api as users_ns
+from app.api.v1.amenities import api as amenities_ns
+from hbnb.app.api.v1.reviews import api as reviews_ns
 bcrypt = Bcrypt() #Register the plugin within the Application
 
 
@@ -15,12 +19,6 @@ def create_app(config_class="config.DevelopmentConfig"):   #Update the create_ap
         description="HBnB Application API",
         doc="/api/v1/",
     )
-
-    # Import and register namespaces
-    from hbnb.app.api.v1.users import api as users_ns
-    from hbnb.app.api.v1.amenities import api as amenities_ns
-    from hbnb.app.api.v1.places import api as places_ns
-    from hbnb.app.api.v1.reviews import api as reviews_ns
 
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
