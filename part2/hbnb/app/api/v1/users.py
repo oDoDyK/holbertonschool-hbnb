@@ -14,7 +14,8 @@ user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user', min_length=1, max_length=50),
     'last_name': fields.String(required=True, description='Last name of the user', min_length=1, max_length=50),
     'email': fields.String(required=True, description='Email of the user'),
-    'is_admin': fields.Boolean(description='Admin status', default=False)
+    'is_admin': fields.Boolean(description='Admin status', default=False),
+    'password': fields.String(required=True, description='Password of the user')   #add password as input
 })
 
 # Define the user response model (without password)
