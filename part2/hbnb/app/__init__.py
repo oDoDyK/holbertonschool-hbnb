@@ -1,5 +1,8 @@
 from flask import Flask
 from flask_restx import Api
+from flask_bcrypt import Bcrypt  #Register the plugin within the Application
+
+bcrypt = Bcrypt() #Register the plugin within the Application
 
 
 def create_app(config.DevelopmentConfig):   #Update the create_app() method to receive a configuration
