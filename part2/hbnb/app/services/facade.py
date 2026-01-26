@@ -33,13 +33,26 @@ class HBnBFacade:
         if user is None:
             return None
 
+        # Only allow safe fields to be updated
+        allowed_fields = {"first_name", "last_name", "email"}
+        for key, value in user_data.items():
+            if key in allowed_fields:
+                setattr(user, key, value)
+
+        self.user_repo.update(user)
+        return user
+
+        user.validate()
+        self.user_repo.update(user)
+        return user
+        
     # ===== Place Management Methods =====
 
     def create_place(self, place_data):
         """Create a new place with validation"""
 
         # ---- price validation ----
-        if place_data['price'] < 0:
+        if place_data['price'] <= 0:
             raise ValueError("Price must be positive")
 
         # ---- latitude validation ----
@@ -89,7 +102,7 @@ class HBnBFacade:
             raise LookupError("Place not found")
 
         if 'price' in place_data:
-            if place_data['price'] < 0:
+            if place_data['price'] <= 0:
                 raise ValueError("Price must be positive")
             place.price = place_data['price']
 
@@ -119,7 +132,8 @@ class HBnBFacade:
                     raise ValueError("Invalid amenity ID")
                 place.add_amenity(amenity)
 
-        place.save()
+        place.validate()
+        self.place_repo.update(place)
         return place
 
     # ===== Amenity Management Methods =====
@@ -147,7 +161,7 @@ class HBnBFacade:
             amenity.name = amenity_data['name']
 
         amenity.validate()
-        amenity.save()
+        self.amenity_repo.update(amenity)
         return amenity
 
     # ===== Review Management Methods (unchanged – next task) =====
