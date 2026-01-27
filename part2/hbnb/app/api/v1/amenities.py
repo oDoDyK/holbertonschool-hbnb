@@ -45,6 +45,7 @@ class AmenityList(Resource):
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
     @api.response(409, 'Amenity with this name already exists')
+    @jwt_required()
     def post(self):
         """Create a new amenity"""
         amenity_data = api.payload
@@ -93,6 +94,7 @@ class AmenityResource(Resource):
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
     @api.response(409, 'Amenity with this name already exists')
+    @jwt_required()
     def put(self, amenity_id):
         """Update amenity information"""
         amenity_data = api.payload
