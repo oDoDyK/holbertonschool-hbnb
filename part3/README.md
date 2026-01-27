@@ -7,9 +7,11 @@ https://github.com/oDoDyK/holbertonschool-hbnb/tree/main/part2
 Depending on the instructions here:
 https://github.com/Holberton-Uy/hbnb-doc/tree/main/part3
 
-He always said : update .., not only create
+He always said : update .., not only create.
+
 so, we find that part3 is also an update of part2
 which means we don't need to make copy of our files then update, or create.
+
 
 -----
 
