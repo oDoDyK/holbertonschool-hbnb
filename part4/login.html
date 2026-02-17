@@ -4,29 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - HBnB</title>
-  <link rel="icon" href="images/icon.png">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="images/icon.png" >
 </head>
 <body>
+
+<!-- Header -->
   <header>
-    <div class="header-container">
-      <img src="images/logo.png" alt="HBnB Logo" class="logo">
-    </div>
-  </header>
+        <nav>
+             <a class="index-button" href="index.html" id="index-link"><img class="logo" src="images/logo.png" alt="logo"></a>
+             <a class="login-button" href="login.html" id="login-link">Login</a>
+        </nav> 
+    </header>
 
   <main class="login-container">
-    <section class="card login-card">
-      <form id="login-form">
-        <h2>Login</h2>
-        <div class="form-group">
-          <input type="email" id="email" placeholder="Email" required>
+    <div class="form-container">
+            <h1>HBnB</h1>
+            <p>Login</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Enter your email:</label>
+                    <input type="email" id="email" name="email" required placeholder="Email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Enter your password:</label>
+                    <input type="password" id="password" name="password" required placeholder="Password">
+                </div>
+                
+                <button type="submit">Login</button>
+                
+                <p id="error-message" class="error"></p>
+            </form>
         </div>
-        <div class="form-group">
-          <input type="password" id="password" placeholder="Password" required>
-        </div>
-        <button type="submit" class="submit-button">Login</button>
-      </form>
-    </section>
   </main>
 
   <footer>
