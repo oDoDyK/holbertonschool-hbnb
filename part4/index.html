@@ -4,34 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HBnB - Available Places</title>
-  <link rel="icon" href="images/icon.png">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/x-icon" href="images/icon.png" >
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="header-container">
-      <img src="images/logo.png" alt="HBnB Logo" class="logo">
-      <a href="login.html" class="login-button" id="login-link">Login</a>
-    </div>
-  </header>
 
+<!-- header -->
+  <header>
+        <nav>
+             <a class="index-button" href="index.html" id="index-link"><img class="logo" src="images/logo.png" alt="logo"></a>
+             <a class="login-button" href="login.html" id="login-link">Login</a>
+        </nav>
+    </header>
+
+<!-- Main -->
   <main>
-    <section class="hero">
       <h1>Available Places</h1>
       
-      <div class="filter-section card">
-        <label for="price-filter">Max Price:</label>
-        <select id="price-filter">
-          <option value="all">All</option>
-          <option value="10">10$</option>
-          <option value="50">50$</option>
-          <option value="100">100$</option>
-        </select>
-      </div>
-    </section>
+        <section class="filters">
+            <label for="country-filter">Filter by City:</label>
+            <select id="country-filter">
+                <option value="">All Cities</option>
+                <option value="Rome">Rome</option>
+                <option value="Madrid">Madrid</option>
+                <option value="Vienna">Vienna</option>
+                <option value="Stockholm ">Stockholm </option>
+            </select>
 
-    <section id="places-list" class="places-grid-container">
-      </section>
+            <label for="price-filter">Filter by Price:</label>
+            <select id="price-filter">
+                <option value="all">All</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+            </select>
+        </section>
+        <!-- Places List -->
+        <section id="places-list" class="places-grid">
+            <!-- Place cards will be added here by JavaScript -->
+        </section>
   </main>
 
   <footer>
