@@ -2,22 +2,35 @@ import os
 
 class Config:
     """Base configuration class"""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+    JWT_SECRET_KEY = SECRET_KEY
     DEBUG = False
-    
-    # JWT Configuration
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt_secret_key')
-    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour in seconds
+    TESTING = False
 
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
-    # Use absolute path for database
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'development.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class TestingConfig(Config):
+    """Testing configuration"""
+    TESTING = True
+    DEBUG = True
+
+class ProductionConfig(Config):
+    """Production configuration"""
+    DEBUG = False
+    
+    @classmethod
+    def init_app(cls, app):
+        """Initialize production config - check SECRET_KEY at runtime"""
+        if not os.environ.get('SECRET_KEY'):
+            raise ValueError("SECRET_KEY environment variable must be set in production")
 
 config = {
     'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'production': ProductionConfig,
     'default': DevelopmentConfig
 }
